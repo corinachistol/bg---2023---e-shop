@@ -1,5 +1,4 @@
 import Fastify from 'fastify'
-import fs from 'node:fs'
 
 const fastify = Fastify( {
     logger:true
@@ -12,8 +11,7 @@ fastify.register(import('@fastify/postgres'), {
 })
 
 
-
-async function itemRoutes() {
+export async function itemRoutes() {
     fastify.get('/', async (req, reply) => {
         const client = await fastify.pg.connect()
         // console.log(client)
@@ -69,17 +67,15 @@ async function itemRoutes() {
     })
 
     fastify.post('/clients/add', async (req,reply) => {
-        const newClient = req.body
-        console.log(JSON.parse(newClient))
-        
-       
+               
         const  client = await fastify.pg.connect()
+        const newClient = req.body
 
         try {
-            // const { rows } = await client.query(`SELECT * from clients`)   
-            const response = await client.query(`INSERT INTO clients(name,address,phone,email,password) VALUES('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.pasword}') RETURNING id`)   
-            console.log(response)
-            return response         
+            
+            const response = await client.query(`INSERT INTO clients(name,address,phone,email,password) VALUES('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.pasword}') `)   
+            // console.log(response)
+            return response       
         
         } catch (err) {
             console.log(err)
@@ -88,8 +84,46 @@ async function itemRoutes() {
         }
     })
 
-  
+    fastify.patch('/clients/:id', async (req,reply) => {
+        const  client = await fastify.pg.connect()
+        const newClient = req.body
+
+        try {
+            const oldUserReq = await client.query(`SELECT * FROM clients WHERE id = ${req.params.id} `)
+            const oldUser = oldUserReq.rows[0]
+            console.log(oldUser)
+            
+            const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.pasword}') WHERE id  = ${req.params.id}`) 
+                console.log('....added')
+            return response 
+            
+        } catch (err) {
+            console.log(err)
+        } finally{
+            client.release()
+        }
+    })
+
+
+    fastify.delete('/clients/:id', async (req,reply) => {
+        const client = await fastify.pg.connect()
+
+        try {
+            const { rows } = await client.query(` DELETE from clients WHERE id = ${req.params.id}`)
+            console.log(`client ${req.params.id} deleted!!!!`)   
+            return rows
+         
+        
+        } catch (err) {
+            console.log(err)
+        } finally {
+            //Release the client immediately after query resolve or throw error
+            client.release()
+        }
+    })
+ 
 }
+
 
 itemRoutes()
 
