@@ -73,7 +73,7 @@ export async function itemRoutes() {
 
         try {
             
-            const response = await client.query(`INSERT INTO clients(name,address,phone,email,password) VALUES('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.pasword}') `)   
+            const response = await client.query(`INSERT INTO clients(name,address,phone,email,password) VALUES('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') `)   
             // console.log(response)
             return response       
         
@@ -93,7 +93,7 @@ export async function itemRoutes() {
             const oldUser = oldUserReq.rows[0]
             console.log(oldUser)
             
-            const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.pasword}') WHERE id  = ${req.params.id}`) 
+            const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') WHERE id  = ${req.params.id}`) 
                 console.log('....added')
             return response 
             
