@@ -8,7 +8,9 @@ fastify.register(import('@fastify/postgres'), {
     connectionString: 'postgres://postgres:postsql123@localhost:5432/js_shop'
 })
 
+
 export async function getAllProducts (req, reply){
+    const fastify = this
     const client = await fastify.pg.connect()
     // console.log(client)
     
@@ -27,6 +29,7 @@ export async function getAllProducts (req, reply){
 }
 
 export async function getAllClients (req,reply){
+    const fastify = this
     const  client = await fastify.pg.connect()
 
     try {
@@ -42,6 +45,7 @@ export async function getAllClients (req,reply){
 }
 
 export async function getClientById (req,reply){
+    const fastify = this
     const  client = await fastify.pg.connect()
 
     try {
@@ -61,6 +65,7 @@ export async function getClientById (req,reply){
 }
 
 export async function addClient (req,reply){
+    const fastify = this
     const  client = await fastify.pg.connect()
     const newClient = req.body
 
@@ -78,6 +83,7 @@ export async function addClient (req,reply){
 }
 
 export async function updateClient (req,reply){
+    const fastify = this
     const  client = await fastify.pg.connect()
     const newClient = req.body
 
@@ -99,6 +105,7 @@ export async function updateClient (req,reply){
 
 
 export async function deleteClient (req,reply){
+    const fastify = this
     const client = await fastify.pg.connect()
 
     try {
