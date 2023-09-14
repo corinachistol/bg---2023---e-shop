@@ -1,13 +1,4 @@
-import Fastify from 'fastify'
-
-const fastify = Fastify( {
-    logger:true
-} )
-
-fastify.register(import('@fastify/postgres'), {
-    connectionString: 'postgres://postgres:postsql123@localhost:5432/js_shop'
-})
-
+import fastifyPlugin from '../dbConnection.js'
 
 export async function getAllProducts (req, reply){
     const fastify = this
@@ -39,7 +30,6 @@ export async function getAllClients (req,reply){
     } catch (err) {
         console.log(err)
     } finally {
-        //Release the client immediately after query resolve or throw error
         client.release()
     }
 }
@@ -59,7 +49,6 @@ export async function getClientById (req,reply){
     } catch (err) {
         console.log(err)
     } finally {
-        //Release the client immediately after query resolve or throw error
         client.release()
     }
 }
@@ -117,7 +106,6 @@ export async function deleteClient (req,reply){
     } catch (err) {
         console.log(err)
     } finally {
-        //Release the client immediately after query resolve or throw error
         client.release()
     }
 }
