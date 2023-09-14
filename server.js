@@ -1,18 +1,13 @@
 import Fastify from 'fastify'
+import dbConnector from './dbConnection.js'
 import { itemRoutes } from './routes/routes.js'
-
 
 const fastify = Fastify( {
     logger:true
 } )
 
-//console.log(fastity)
 
-fastify.register(import('@fastify/postgres'), {
-    connectionString: 'postgres://postgres:postsql123@localhost:5432/js_shop'
-    
-})
-
+fastify.register(dbConnector)
 fastify.register(itemRoutes)
 
 
