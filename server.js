@@ -1,6 +1,8 @@
 import Fastify from 'fastify'
 import dbConnector from './dbConnection.js'
 import { itemRoutes } from './routes/routes.js'
+import { authRoutes } from './auth/auth.js'
+import { testMiddleware } from './middleware/middleware.js'
 
 const fastify = Fastify( {
     logger:true
@@ -8,7 +10,12 @@ const fastify = Fastify( {
 
 
 fastify.register(dbConnector)
+
 fastify.register(itemRoutes)
+fastify.register(authRoutes)
+fastify.register(testMiddleware)
+
+
 
 
 const start = async () => {
