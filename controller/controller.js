@@ -1,5 +1,9 @@
 import fastifyPlugin from '../dbConnection.js'
 
+export async function getHomePage(req,reply){
+    reply.send({Welcome:"to Home Page"})
+}
+
 export async function getAllProducts (req, reply){
     const fastify = this
     const client = await fastify.pg.connect()
@@ -62,7 +66,7 @@ export async function addClient (req,reply){
         
         const response = await client.query(`INSERT INTO clients(name,address,phone,email,password) VALUES('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') `)   
         // console.log(response)
-        return response       
+        return reply.code(200).send({message: "Client added"})       
     
     } catch (err) {
         console.log(err)
