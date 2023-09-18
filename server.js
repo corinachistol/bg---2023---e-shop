@@ -1,8 +1,8 @@
 import Fastify from 'fastify'
 import dbConnector from './dbConnection.js'
-import { itemRoutes } from './routes/routes.js'
+import { clientRoutes, productRoute, homePage } from './routes/routes.js'
 import { authRoutes } from './auth/auth.js'
-import { testMiddleware } from './middleware/middleware.js'
+
 
 const fastify = Fastify( {
     logger:true
@@ -11,10 +11,20 @@ const fastify = Fastify( {
 
 fastify.register(dbConnector)
 
-fastify.register(itemRoutes)
+fastify.register(clientRoutes, {prefix: '/clients'})
+fastify.register(productRoute, { prefix:'/products'})
+fastify.register(homePage)
 fastify.register(authRoutes)
-fastify.register(testMiddleware)
 
+
+fastify.decorate('testMiddleware', async (request,reply) => {
+    console.log(">>>TEST")
+    fastify.log.info(">>>TEST!!!")
+} )
+
+fastify.addHook('preHandler', async (request,reply) => {
+    fastify.testMiddleware(request)
+})
 
 
 
