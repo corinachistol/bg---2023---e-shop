@@ -30,6 +30,9 @@ export async function getAllClients (req,reply){
     try {
         const { rows } = await client.query(`SELECT * from clients`)           
         return rows
+        // o alta varianta de afisare a datelor clientilor pe linga schema
+        // const id_name = rows.map(row => {return {id: row.id, name: row.name}});
+        // return id_name
         
     } catch (err) {
         console.log(err)
@@ -47,7 +50,7 @@ export async function getClientById (req,reply){
         // const  { id }  = await req.params 
        
         // const item = rows.find(row => row.id == id)   
-        return rows
+        return  rows
      
     
     } catch (err) {
