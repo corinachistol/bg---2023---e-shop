@@ -63,38 +63,30 @@ export async function clientRoutes(fastify,options) {
         preHandler: async function (request, reply){ 
             // const fastify = this  
             const  client = await fastify.pg.connect() 
-            
-            const session_id = request.query.session_id
-            const { rows } = await client.query(`SELECT * from clients`)  
-            console.log(rows)
-
-            console.log(request.params.id)
-            console.log(session_id)
-            
-            if (session_id === undefined){
-                         
-                // o alta varianta de afisare a datelor clientilor pe linga schema
-                const id_name = rows.map(row => {return {id: row.id, name: row.name}});
+            // console.log(typeof request.query.session_id)
+                   
+            const clientsQuery = await client.query(`SELECT * from clients WHERE id = ${request.params.id}`) 
+            const id_name = clientsQuery.rows.map(client => {return {id: client.id, name: client.name}});
+            const clientSession = await client.query(`SELECT * FROM client_sessions WHERE session_id = '${request.query.session_id}'`)
+            console.log(clientSession.rows[0]) 
+                     
+            if (!request.query.session_id  ){     
+                console.log("First")
                 reply.send(id_name )
-                    
-            // this.addSchema(getClientOps)
-            //    reply.send(request.schema = getClientOps)
-            // then the response will contain only the client's id and username
-            } else if(session_id !== ''){
-                const clientSession = await client.query(`SELECT * FROM client_sessions WHERE session_id = '${session_id}'`)
-                const clientSessionId = clientSession.rows[0].client_id
-                console.log(clientSessionId)
-
-                if(clientSessionId === request.params.id){
-                    return
-                   //return  the complete client\s data (including password, email, etc),
-                }else{
-                    const id_name = rows.map(row => {return {id: row.id, name: row.name}});
-                    reply.send(id_name )
-
-                    // do as in the first if (this mechanism will protect the client's data from getting in to the wrong hands),
-                }
+                
+            } 
+            else if(clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id){ // req sessiona id nu este gol si are inregistrare in tabel.adica este logat si acceseaza datele sale
+               
+                console.log("Second")
+                reply.send(clientsQuery.rows[0] )
             }
+            else{
+                console.log("Third")
+                reply.code(401).send("You are not authorized to access this data!")
+
+                // do as in the first if (this mechanism will protect the client's data from getting in to the wrong hands),
+            }
+            
         },
         handler:getClientById
     })
@@ -103,7 +95,47 @@ export async function clientRoutes(fastify,options) {
 
     fastify.post('/add',postClientOps, addClient )
 
-    fastify.patch('/:id',postClientOps, updateClient)
+    fastify.route({
+        method:"PATCH",
+        url: '/:id',
+        schema: postClientOps,
+        preHandler: async function (request,reply) {
+            const  client = await fastify.pg.connect() 
+                
+            const clientQueryResult = await client.query(`SELECT * from client_sessions WHERE session_id ='${request.query.session_id}'`)  
+            // console.log(clientQueryResult.rows[0])
+            // const clientIdQuery = clientQueryResult.rows[0].client_id
+            // const clientSessionQuery = clientQueryResult.rows[0].session_id
+            // console.log(typeof clientSessionQuery)
+
+            if(!request.query.session_id){
+                console.log('Client unauthorized!')
+                reply.code(401).send("Client not authorized!!!")
+            } 
+            else if( !!clientQueryResult.rows[0].session_id ){
+                console.log("Client authorized and tries to accesss other data!")
+                reply.code(401).send("You are not authorized to access this data!")
+
+            } 
+            else if( !!clientQueryResult.rows[0].session_id && request.params.id === clientQueryResult.rows[0].client_id) {
+                console.log("You are trying to update your own data")
+
+            }
+            
+
+            // if(request.query.session_id == clientSessionQuery && request.params.id == clientIdQuery ){
+            //     console.log("There is a match")
+            // }
+            // else if (request.params.id == undefined) {
+            //     console.log("There is not a match")
+            //     // reply.code(401).send({message:"Unauthorized user for this action!"})
+            // }
+
+        },
+        handler: updateClient
+    })
+
+    // fastify.patch('/:id',postClientOps, updateClient)
 
     fastify.delete('/:id', deleteClient)
  
