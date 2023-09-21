@@ -104,11 +104,7 @@ export async function clientRoutes(fastify, options) {
             const newClient = request.body
 
             const clientSession = await client.query(`SELECT * from client_sessions WHERE session_id ='${request.query.session_id}'`)
-            // console.log(clientQueryResult.rows[0])
-            // const clientIdQuery = clientQueryResult.rows[0].client_id
-            // const clientSessionQuery = clientQueryResult.rows[0].session_id
-            // console.log(typeof clientSessionQuery)
-
+ 
             if (!request.query.session_id) {
                 console.log('Client unauthorized!')
                 reply.code(401).send("Client not authorized!!!")
@@ -129,19 +125,8 @@ export async function clientRoutes(fastify, options) {
             else if (clientSession.rows[0] !== undefined && request.params.id !== clientSession.rows[0].client_id) {
                 console.log("You are not authorized to update another user")
                 reply.code(401).send("You are not authorized to update another user")
-                
-
+            
             }
-
-
-            // if(request.query.session_id == clientSessionQuery && request.params.id == clientIdQuery ){
-            //     console.log("There is a match")
-            // }
-            // else if (request.params.id == undefined) {
-            //     console.log("There is not a match")
-            //     // reply.code(401).send({message:"Unauthorized user for this action!"})
-            // }
-
         },
         handler: updateClient
     })
