@@ -10,6 +10,7 @@ const fastify = Fastify( {
 
 
 fastify.register(dbConnector)
+// fastify.register(import('@fastify/url-data'))
 
 fastify.register(clientRoutes, {prefix: '/clients'})
 fastify.register(productRoute, { prefix:'/products'})
@@ -24,6 +25,17 @@ fastify.decorate('testMiddleware', async (request,reply) => {
 
 fastify.addHook('preHandler', async (request,reply) => {
     fastify.testMiddleware(request)
+})
+
+fastify.decorate('checkRequestMethod', async(request,reply) => {
+    if(request.method == "PATCH" || request.method == "DELETE"){
+        console.log("Update/Delete check")
+
+    }
+})
+
+fastify.addHook('onRequest', async(request,reply) => {
+    fastify.checkRequestMethod(request)
 })
 
 
