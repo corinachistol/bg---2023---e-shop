@@ -28,27 +28,44 @@ fastify.addHook('preHandler', async (request,reply) => {
 })
 
 
-fastify.addHook('preValidation', async(request,reply) => {
+fastify.addHook('preHandler', async(request,reply) => {
     if(request.method === "PATCH" || request.method === "DELETE"){
         console.log("Update/Delete check")
 
         const client = await fastify.pg.connect()
 
-        const clientSession = await client.query(`SELECT * from client_sessions WHERE session_id ='${request.query.session_id}'`)
         
-        if (!request.query.session_id) {
-            console.log('Client unauthorized!')
-            reply.code(401).send("Client not authorized!!!")
-        }
-        else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // daca clientul este autentificat si incearca sa updateze info sa
-            console.log("You are trying to update/delete your own data")         
 
+        if(!request.query.session_id){
+            console.log("First")
+            reply.code(401).send("Client not authorized!!!")
+
+        }else{
+            const clientSession = await client.query(`SELECT * from client_sessions WHERE session_id ='${request.query.session_id}'`)
+
+            if(clientSession.rows[0] !== undefined){
+                if(request.params.id == clientSession.rows[0].client_id){
+                    console.log("SECOND!You are trying to update/delete your own data")
+                }else if(request.params.id !== clientSession.rows[0].client_id){
+                    console.log("THIRD!You are not authorized to update/delete another user")
+                    reply.code(401).send("You are not authorized to update/delete another user")
+                }
+            }
         }
-        else if (clientSession.rows[0] !== undefined && request.params.id !== clientSession.rows[0].client_id) {
-            console.log("You are not authorized to update/delete another user")
-            reply.code(401).send("You are not authorized to update/delete another user")
         
-        }
+        // if (!request.query.session_id) {
+        //     console.log('Client unauthorized!')
+        //     reply.code(401).send("Client not authorized!!!")
+        // }
+        // else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // daca clientul este autentificat si incearca sa updateze info sa
+        //     console.log("You are trying to update/delete your own data")         
+
+        // }
+        // else if (clientSession.rows[0] !== undefined && request.params.id !== clientSession.rows[0].client_id) {
+        //     console.log("You are not authorized to update/delete another user")
+        //     reply.code(401).send("You are not authorized to update/delete another user")
+        
+        // }
 
     }
 })
