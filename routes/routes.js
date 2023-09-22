@@ -82,7 +82,7 @@ export async function clientRoutes(fastify, options) {
             }
             else {
                 console.log("Third")
-                reply.code(401).send("You are not authorized to access this data!")
+                reply.send(id_name)
 
                 // do as in the first if (this mechanism will protect the client's data from getting in to the wrong hands),
             }
@@ -95,43 +95,7 @@ export async function clientRoutes(fastify, options) {
 
     fastify.post('/add', postClientOps, addClient)
 
-    fastify.route({
-        method: "PATCH",
-        url: '/:id',
-        schema: postClientOps,
-        preHandler: async function (request, reply) {
-            const client = await fastify.pg.connect()
-            const newClient = request.body
-
-            const clientSession = await client.query(`SELECT * from client_sessions WHERE session_id ='${request.query.session_id}'`)
- 
-            if (!request.query.session_id) {
-                console.log('Client unauthorized!')
-                reply.code(401).send("Client not authorized!!!")
-            }
-            else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // daca clientul este autentificat si incearca sa updateze info sa
-                console.log("You are trying to update your own data")
-                // return reply.code(200).send("OK")
-                const oldUserReq = await client.query(`SELECT * FROM clients WHERE id = ${request.params.id} `)
-                const oldUser = oldUserReq.rows[0]
-                // console.log(oldUser)
-        
-                const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') WHERE id  = ${request.params.id}`) 
-                console.log('....added')
-                return response
-              
-
-            }
-            else if (clientSession.rows[0] !== undefined && request.params.id !== clientSession.rows[0].client_id) {
-                console.log("You are not authorized to update another user")
-                reply.code(401).send("You are not authorized to update another user")
-            
-            }
-        },
-        handler: updateClient
-    })
-
-    // fastify.patch('/:id',postClientOps, updateClient)
+    fastify.patch('/:id',postClientOps, updateClient)
 
     fastify.delete('/:id', deleteClient)
 
