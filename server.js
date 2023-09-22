@@ -34,8 +34,6 @@ fastify.addHook('preHandler', async(request,reply) => {
 
         const client = await fastify.pg.connect()
 
-        
-
         if(!request.query.session_id){
             console.log("First")
             reply.code(401).send("Client not authorized!!!")
@@ -52,21 +50,6 @@ fastify.addHook('preHandler', async(request,reply) => {
                 }
             }
         }
-        
-        // if (!request.query.session_id) {
-        //     console.log('Client unauthorized!')
-        //     reply.code(401).send("Client not authorized!!!")
-        // }
-        // else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // daca clientul este autentificat si incearca sa updateze info sa
-        //     console.log("You are trying to update/delete your own data")         
-
-        // }
-        // else if (clientSession.rows[0] !== undefined && request.params.id !== clientSession.rows[0].client_id) {
-        //     console.log("You are not authorized to update/delete another user")
-        //     reply.code(401).send("You are not authorized to update/delete another user")
-        
-        // }
-
     }
 })
 
