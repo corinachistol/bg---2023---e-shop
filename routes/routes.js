@@ -66,26 +66,54 @@ export async function clientRoutes(fastify, options) {
             // console.log(typeof request.query.session_id)
 
             const clientsQuery = await client.query(`SELECT * from clients WHERE id = ${request.params.id}`)
+            console.log(clientsQuery.rows[0])
             const id_name = clientsQuery.rows.map(client => { return { id: client.id, name: client.name } });
-            const clientSession = await client.query(`SELECT * FROM client_sessions WHERE session_id = '${request.query.session_id}'`)
-            console.log(clientSession.rows[0])
 
-            if (!request.query.session_id) {
-                console.log("First")
-                reply.send(id_name)
 
+            if(!request.query.session_id){
+                if(!clientsQuery.rows[0] ){
+                    console.log("First")
+                    reply.send(`Client with id ${request.params.id} is missing in the database!!!`)
+                }else{
+                    console.log("Second")
+                    reply.send(id_name)
+                }
+            } else{
+                const clientSession = await client.query(`SELECT * FROM client_sessions WHERE session_id = '${request.query.session_id}'`)
+                if(clientSession.rows[0] !== undefined ) {
+                    if(request.params.id == clientSession.rows[0].client_id){
+                        console.log("Third")
+                        reply.send(clientsQuery.rows[0])
+                    }else if(request.params.id !== clientSession.rows[0].client_id){
+                        console.log("Forth")
+                        reply.send(id_name)
+                    }
+                    else if(!clientsQuery.rows[0] ){ //nu ajunge aici
+                        console.log("fith")
+                        reply.send(`Client with id ${request.params.id} is missing in the database!!!`)
+                    }
+                    
+
+                }
             }
-            else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // req sessiona id nu este gol si are inregistrare in tabel.adica este logat si acceseaza datele sale
+            
+           //ACESTA VARIANTA FUNCTIONEAZA .DAR NU ACOPERA TOATE SITUATIILE
+            // if (!request.query.session_id) {
+            //     console.log("First")
+            //     reply.send(id_name)
 
-                console.log("Second")
-                reply.send(clientsQuery.rows[0])
-            }
-            else {
-                console.log("Third")
-                reply.send(id_name)
+            // }
+            // else if (clientSession.rows[0] !== undefined && request.params.id == clientSession.rows[0].client_id) { // req sessiona id nu este gol si are inregistrare in tabel.adica este logat si acceseaza datele sale
 
-                // do as in the first if (this mechanism will protect the client's data from getting in to the wrong hands),
-            }
+            //     console.log("Second")
+            //     reply.send(clientsQuery.rows[0])
+            // }
+            // else {
+            //     console.log("Third")
+            //     reply.send(id_name)
+
+            //     // do as in the first if (this mechanism will protect the client's data from getting in to the wrong hands),
+            // }
 
         },
         handler: getClientById
