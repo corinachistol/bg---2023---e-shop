@@ -78,17 +78,17 @@ export async function addClient (req,reply){
     }
 }
 
-export async function updateClient (req,reply){
+export async function updateClient (request,reply){
     const fastify = this
     const  client = await fastify.pg.connect()
-    const newClient = req.body
+    const newClient = request.body
 
     try {
-        const oldUserReq = await client.query(`SELECT * FROM clients WHERE id = ${req.params.id} `)
+        const oldUserReq = await client.query(`SELECT * FROM clients WHERE id = ${request.params.id} `)
         const oldUser = oldUserReq.rows[0]
-        console.log(oldUser)
+        // console.log(oldUser)
         
-        const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') WHERE id  = ${req.params.id}`) 
+        const response = await client.query(`UPDATE clients SET(name ,address , phone , email ,password) = ('${newClient.name}', '${newClient.address}','${newClient.phone}', '${newClient.email}','${newClient.password}') WHERE id  = ${request.params.id}`) 
             console.log('....added')
         return response 
         
@@ -100,13 +100,13 @@ export async function updateClient (req,reply){
 }
 
 
-export async function deleteClient (req,reply){
+export async function deleteClient (request,reply){
     const fastify = this
     const client = await fastify.pg.connect()
 
     try {
-        const { rows } = await client.query(` DELETE from clients WHERE id = ${req.params.id}`)
-        console.log(`client ${req.params.id} deleted!!!!`)   
+        const { rows } = await client.query(` DELETE from clients WHERE id = ${request.params.id}`)
+        console.log(`client ${request.params.id} deleted!!!!`)   
         return rows
      
     
