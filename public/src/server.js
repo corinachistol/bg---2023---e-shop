@@ -12,10 +12,14 @@ const fastify = Fastify();
 fastify.get('/', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     reply.code(200).send({ status: "Active" });
 }));
-fastify.listen({ port: 3000 }, (err, address) => {
-    if (err) {
-        console.error(err);
+const start = () => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        yield fastify.listen({ port: 3000 });
+        fastify.log.info(`Server is listening on port:3000`);
+    }
+    catch (err) {
+        fastify.log.error(err);
         process.exit(1);
     }
-    console.log(`Server is listening at ${address}`);
 });
+start();
