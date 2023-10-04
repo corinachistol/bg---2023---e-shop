@@ -2,12 +2,9 @@
 import { Column } from 'typeorm'
 
 export class Money {
-    @Column()
-    amount!: number; // fara undefined da eroare
+    @Column("integer")
+    amount!: number; 
 
-    @Column({
-        type: "integer",
-        length: 3
-    })
+    @Column()
     currency!: string;
 }
