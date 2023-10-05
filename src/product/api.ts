@@ -8,27 +8,25 @@ export async function postRoute (fastify:FastifyInstance, options: object) {
     fastify.post('/products', async (request, reply) => {
         try {
             const newData = request.body
-            console.log(newData)
+            console.log(newData.name, newData.priceAmount,newData.priceCurrency)
 
-            const newItem = await fastify.orm.getRepository(Product).create(newData)
-            await 
+            const newProduct = await fastify.orm
+                .createQueryBuilder()
+                .insert()
+                .into(Product)
+                .values({
+                    name: newData.name,
+                    price: `${newData.priceAmount}:${newData.priceCurrency}`,
+                    // priceCurrency: newData.priceCurrency
 
-            // const query = await fastify.orm.createQueryBuilder().insert().into(Product).values({
-            //     name: name,
-            //     priceAmount: priceAmount,
-            //     priceCurrency: priceCurrency
-
-            // }).execute()
+            }).execute()
             console.log('>>>>> item added')
                                  
-            reply.code(201).send(newItem)
+            reply.code(201).send(newProduct)
 
         } catch (error) {
             reply.code(500).send({error: 'Error adding a new product!'})
-        }
-        
-        // await userRepository.save(newProduct)
-        
+        }      
 
     })
 
