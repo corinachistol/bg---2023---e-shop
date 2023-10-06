@@ -3,7 +3,7 @@ import {Product} from './product/entities.js'
 import {postRoute} from './product/api.js'
 import { Money } from './financial/entitites.js';
 import  {Client} from './client/entities.js'
-import { getAllClients } from './client/api.js';
+import { getAllClients,postClient } from './client/api.js';
 
 const fastify:FastifyInstance = Fastify({logger:true})
 
@@ -21,6 +21,7 @@ fastify.register(import('fastify-typeorm-plugin'),{
 
 fastify.register(postRoute)
 fastify.register(getAllClients)
+fastify.register(postClient)
 
 
 fastify.get('/', async (request, reply) => {
