@@ -10,6 +10,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import Fastify from 'fastify';
 import { Product } from './product/entities.js';
 import { postRoute } from './product/api.js';
+import { Client } from './client/entities.js';
+import { getAllClients, postClient } from './client/api.js';
 const fastify = Fastify({ logger: true });
 fastify.register(import('fastify-typeorm-plugin'), {
     type: 'postgres',
@@ -20,17 +22,19 @@ fastify.register(import('fastify-typeorm-plugin'), {
     password: 'postsql123',
     logging: true,
     synchronize: true,
-    entities: [Product],
+    entities: [Product, Client],
 });
 fastify.register(postRoute);
+fastify.register(getAllClients);
+fastify.register(postClient);
 fastify.get('/', (request, reply) => __awaiter(void 0, void 0, void 0, function* () {
     console.log("Active");
     const products = yield fastify.orm
         .getRepository(Product)
         .createQueryBuilder('products')
         .getMany();
-    return products;
-    // reply.code(200).send({status:"Active"}) 
+    // return products;
+    reply.code(200).send({ products });
 }));
 const start = () => __awaiter(void 0, void 0, void 0, function* () {
     try {

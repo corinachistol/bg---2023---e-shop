@@ -12,7 +12,7 @@ import { Column } from 'typeorm';
 export class Money {
 }
 __decorate([
-    Column("integer"),
+    Column({ type: "numeric" }),
     __metadata("design:type", Number)
 ], Money.prototype, "amount", void 0);
 __decorate([
