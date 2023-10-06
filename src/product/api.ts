@@ -1,5 +1,5 @@
 //route post
-import Fastify, { FastifyInstance,FastifySchema } from 'fastify'
+import Fastify, { FastifyInstance,FastifyReply,FastifyRequest,FastifySchema } from 'fastify'
 import { Product } from './entities.js'
 import { postProductSchema } from './schema.js'
 
@@ -11,20 +11,16 @@ export async function postRoute (fastify, options: object) {
         method: "POST",
         url: '/products',
         schema:postProductSchema,
-        handler: async (request, reply) => {
+        handler: async (request:FastifyRequest, reply:FastifyReply) => {
             try {
-                const {name, amount, currency} = request.body
-                // const newProduct = await fastify.orm.manager.create(Product, {
-                //     name: name,
-                //     priceAmount: priceAmount,
-                //     priceCurrency: priceCurrency
-                // })
-    
+                const {id, name, amount, currency} = request.body
+                  
                 const newProduct = await fastify.orm
                     .createQueryBuilder()
                     .insert()
                     .into(Product)
                     .values({
+                        // products_id: id,
                         products_name: name,
                         products_priceAmount: amount,
                         products_priceCurrency: currency
@@ -54,25 +50,6 @@ export async function postRoute (fastify, options: object) {
              
             
 
-    //         const newProduct = await fastify.orm
-    //             .createQueryBuilder()
-    //             .insert()
-    //             .into(Product)
-    //             .values({
-    //                 name: name,
-    //                 priceAmount: priceAmount,
-    //                 priceCurrency: priceCurrency
-
-    //         }).execute()
-    //         console.log('>>>>> item added')
-                                 
-    //         reply.code(201).send(newProduct)
-
-    //     } catch (error) {
-    //         reply.code(500).send({error: 'Error adding a new product!'})
-    //     }      
-
-    // })
-
+   
 }
 
