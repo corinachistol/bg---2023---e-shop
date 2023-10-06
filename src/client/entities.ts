@@ -11,7 +11,7 @@ class Name{
 
 @Entity()
 export class Client extends BaseEntity{
-    @PrimaryGeneratedColumn('uuid')
+    @PrimaryGeneratedColumn()
     id!:string
 
     @Column(()=>Name)
