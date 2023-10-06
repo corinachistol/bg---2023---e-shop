@@ -1,11 +1,11 @@
-import Fastify from 'fastify';
+import Fastify,{ FastifyInstance } from 'fastify';
 import {Product} from './product/entities.js'
 import {postRoute} from './product/api.js'
 import { Money } from './financial/entitites.js';
 import  {Client} from './client/entities.js'
 import { getAllClients } from './client/api.js';
 
-const fastify = Fastify({logger:true})
+const fastify:FastifyInstance = Fastify({logger:true})
 
 fastify.register(import('fastify-typeorm-plugin'),{
     type: 'postgres',
