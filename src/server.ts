@@ -1,5 +1,9 @@
 import Fastify from 'fastify';
 import {Product} from './product/entities.js'
+import {postRoute} from './product/api.js'
+import { Money } from './financial/entitites.js';
+import  {Client} from './client/entities.js'
+import { getAllClients } from './client/api.js';
 
 const fastify = Fastify({logger:true})
 
@@ -12,8 +16,11 @@ fastify.register(import('fastify-typeorm-plugin'),{
     password: 'postsql123',
     logging: true,
     synchronize: true,
-    entities: [Product],
+    entities: [Product,Client],
 })
+
+fastify.register(postRoute)
+fastify.register(getAllClients)
 
 
 fastify.get('/', async (request, reply) => {
@@ -24,9 +31,10 @@ fastify.get('/', async (request, reply) => {
         .createQueryBuilder('products')
         .getMany()
     
-        return products;
-    // reply.code(200).send({status:"Active"}) 
+      // return products;
+    reply.code(200).send({products}) 
 })
+
 
 const start = async () => {
   try {
