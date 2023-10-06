@@ -2,7 +2,7 @@
 import { Column } from 'typeorm'
 
 export class Money {
-    @Column("integer")
+    @Column({type:"numeric"})
     amount!: number; 
 
     @Column()
