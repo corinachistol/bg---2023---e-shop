@@ -1,6 +1,6 @@
 import {BaseEntity, Column, Entity, PrimaryGeneratedColumn} from 'typeorm'
 
-class Name{
+export class Name{
     @Column()
     first!:string
 
