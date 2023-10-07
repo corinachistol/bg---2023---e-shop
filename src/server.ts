@@ -25,15 +25,14 @@ fastify.register(postClient)
 
 
 fastify.get('/', async (request, reply) => {
-    console.log("Active")
-
-    const products = await fastify.orm
+    
+  const products = await fastify.orm
         .getRepository(Product)
         .createQueryBuilder('products')
         .getMany()
     
-      // return products;
-    reply.code(200).send({products}) 
+    console.log(products)
+    reply.code(200).send(products) 
 })
 
 
