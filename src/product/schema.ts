@@ -1,7 +1,7 @@
 const productSchema = {
     name: {type:"string"},
-    amount: {type:"integer"},
-    currency: {type:"string"}
+    priceAmount: {type:"integer"},
+    priceCurrency: {type:"string"}
 }
 
 export const postProductSchema = {
@@ -10,7 +10,7 @@ export const postProductSchema = {
         //incoming request body
         type: "object",
         properties: productSchema,
-        required: ["name", "amount", "currency"]
+        required: ["name", "priceAmount", "priceCurrency"]
     },
     response:{
         201: {
