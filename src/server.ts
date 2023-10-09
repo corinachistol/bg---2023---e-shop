@@ -1,7 +1,6 @@
-import Fastify,{ FastifyInstance } from 'fastify';
+import Fastify,{ FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
 import {Product} from './product/entities.js'
-import {postRoute} from './product/api.js'
-import { Money } from './financial/entitites.js';
+import {postProduct} from './product/api.js'
 import  {Client} from './client/entities.js'
 import { getAllClients,postClient } from './client/api.js';
 
@@ -19,10 +18,9 @@ fastify.register(import('fastify-typeorm-plugin'),{
     entities: [Product,Client],
 })
 
-fastify.register(postRoute)
+fastify.register(postProduct,)
 fastify.register(getAllClients)
 fastify.register(postClient)
-
 
 fastify.get('/', async (request, reply) => {
     
@@ -30,9 +28,19 @@ fastify.get('/', async (request, reply) => {
         .getRepository(Product)
         .createQueryBuilder('products')
         .getMany()
+  
+     const newPayload = products.map(item => {
+      return {
+        ...item,
+        _type: 'Products',
+        price: {
+          ...item.price,
+          _type: 'Money'
+        }
+      }
+    })
     
-    console.log(products)
-    reply.code(200).send(products) 
+    reply.code(200).send(newPayload) 
 })
 
 
